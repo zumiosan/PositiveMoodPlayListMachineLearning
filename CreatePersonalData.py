@@ -15,11 +15,22 @@ def concat_questionnaire_personal_data(file_paths):
     :return: 楽曲番号と印象を結合したもの，楽曲番号と快不快度を結合したもの，楽曲番号と印象，快不快度を結合したもの
     """
 
-    data_impression = pd.DataFrame()
-    data_pleasure = pd.DataFrame()
-    data_all = pd.DataFrame()
+    # 読み込みと連結
+    personal_impression = pd.DataFrame()
+    personal_pleasure = pd.DataFrame()
+    personal_all = pd.DataFrame()
     for file_path in file_paths:
-        data =
+        data = pd.read_csv(file_path, encoding='utf-8-sig')
+        personal_all = pd.concat([personal_all, data], axis=1)
+        personal_impression = pd.concat([personal_impression, data['mid', 'class']])
+        personal_pleasure = pd.concat([personal_pleasure, data['mid', 'pleasure']])
+
+    # mid順にソート
+    personal_impression.sort_values('mid', inplace=True)
+    personal_impression.sort_values('mid', inplace=True)
+    personal_impression.sort_values('mid', inplace=True)
+
+    return personal_impression, personal_pleasure, personal_all
 
 
 def main():
@@ -28,17 +39,17 @@ def main():
     directory_paths = get_directory_paths(base_path)
 
     # 個人データを作る
-    personal_impression_data = pd.DataFrame()
-    personal_pleasure_data = pd.DataFrame()
-    personal_data = pd.DataFrame()
     for directory_path in directory_paths:
         file_paths = get_file_paths(directory_path)
         # print(file_paths)
 
         # ファイルを読み込んで結合する
-        data_class, data_pleasure = concat_questionnaire_personal_data(file_paths)
+        personal_impression, personal_pleasure, personal_all = concat_questionnaire_personal_data(file_paths)
 
-
+        # csvに保存
+        save_csv(directory_path, personal_all)
+        save_csv(directory_path, personal_impression)
+        save_csv(directory_path, personal_pleasure)
 
 
 if __name__ == '__main__':
