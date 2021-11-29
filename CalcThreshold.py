@@ -147,10 +147,6 @@ def get_class_data(data):
 
 
 def main():
-    # ディレクトリ名取得
-    base_path = f".{os.sep}data{os.sep}questionnaire_personal_data/"
-    directory_paths = get_directory_paths(base_path)
-
     # 共通データの読み込み
     common_data = pd.read_csv('./data/common_data/common_data.csv', encoding='utf-8-sig')
     class_data_common = get_class_data(common_data)
@@ -167,6 +163,10 @@ def main():
     save_csv('./data/common_data/common_params.csv', params_common)
 
     # 個人快不快度の閾値を求める
+    # ディレクトリ名取得
+    base_path = f".{os.sep}data{os.sep}questionnaire_personal_data/"
+    directory_paths = get_directory_paths(base_path)
+
     for directory_path in directory_paths:
         # 個人データ読み込み
         directory_path = f'{directory_path}/personal_data/'
