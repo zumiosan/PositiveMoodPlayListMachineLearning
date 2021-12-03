@@ -40,9 +40,9 @@ def plot_threshold(df_params, df_pleasure, path):
         plot = class_data[int(row['class'] - 1)]['pleasure'].plot.hist(density=True)
         plot.plot(x, y, label=f"mu:{row['mu']}, sigma:{row['sigma']}, nu:{row['nu']}")
         try:
-            y_index = math.floor(row['threshold'] * 100) - 1
-            plot.vlines(row['threshold'], ymax=y[y_index], ymin=0, colors='red',
-                        label=f"mu-sigma:{row['threshold']}")
+            y_index = math.floor(row['Threshold'] * 100) - 1
+            plot.vlines(row['Threshold'], ymax=10, ymin=0, colors='red',
+                        label=f"mu-sigma:{row['Threshold']}")
         except IndexError:
             pass
         plot.legend(loc='best')

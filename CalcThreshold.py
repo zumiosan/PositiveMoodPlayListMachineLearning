@@ -39,7 +39,8 @@ def get_add_common_data(y_personal, y_common):
     :return: 共通快不快度データを結合したデータ
     """
     # 中央値の差を求める．
-    diff_median = round(y_personal['pleasure'].median() - y_common['pleasure'].median(), 2)
+    # diff_median = round(y_personal['pleasure'].median() - y_common['pleasure'].median(), 2)
+    diff_median = round(y_personal['pleasure'].mean() - y_common['pleasure'].mean(), 2)
 
     # 共通快不快度データを中央値の差分だけ動かす
     y_common['pleasure'] = y_common['pleasure'] + diff_median
@@ -63,10 +64,12 @@ def get_params_personal(y_personal, y_common):
     :return: パラメータ
     """
     # ベイズ推定ができなかった場合は共通快不快度データを足し合わせて再度行う．
-    try:
-        params = bayesian_inference(y_personal)
-    except (RuntimeError, ValueError):
-        params = bayesian_inference(get_add_common_data(y_personal, y_common))
+    # try:
+    #     params = bayesian_inference(y_personal)
+    # except (RuntimeError, ValueError):
+    #     params = bayesian_inference(get_add_common_data(y_personal, y_common))
+
+    params = bayesian_inference(get_add_common_data(y_personal, y_common))
 
     params = pd.DataFrame([params])
 
