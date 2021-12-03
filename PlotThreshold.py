@@ -12,9 +12,8 @@ import matplotlib.pyplot as plt
 import math
 
 
-def calc_threshold(mu, sigma):
+def calc_threshold(mu, sigma, nu):
     # 閾値を計算
-    # print(mu, sigma)
     if mu < 0.5:
         value = mu + sigma
     elif mu >= 0.5:
@@ -41,7 +40,7 @@ def plot_threshold(df_params, df_pleasure, path):
         plot = class_data[int(row['class'] - 1)]['pleasure'].plot.hist(density=True)
         plot.plot(x, y, label=f"mu:{row['mu']}, sigma:{row['sigma']}, nu:{row['nu']}")
         try:
-            # y_index = math.floor(row['Threshold'] * 100) - 1
+            y_index = math.floor(row['Threshold'] * 100) - 1
             plot.vlines(row['Threshold'], ymax=10, ymin=0, colors='red',
                         label=f"mu-sigma:{row['Threshold']}")
         except IndexError:
@@ -61,10 +60,9 @@ def get_threshold(df):
 
     thresholds = []
     for index, row in df.iterrows():
-        point = calc_threshold(mu=row['mu'], sigma=row['sigma'])
+        point = calc_threshold(mu=row['mu'], sigma=row['sigma'], nu=row['nu'])
         thresholds.append(point)
     df['Threshold'] = thresholds
-    # print(df)
 
     return df
 
