@@ -7,11 +7,20 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 from packages.files import save_csv, get_directory_paths
+import matplotlib.pyplot as plt
 
 
-def percent_point(mu, sigma, nu, percent=0.20):
+def percent_point(mu, sigma, nu, left_percent=0.20, right_percent=0.80):
     # 確率密度関数を生成
-    return round(stats.t.ppf(q=percent, df=nu, loc=mu, scale=sigma), 2)
+    x = np.linspace(0, 1, 100)
+    t_pdf = stats.t.pdf(x=x, df=nu, loc=mu, scale=sigma)
+    t_ppf = stats.t.ppf(q=left_percent, df=nu, loc=mu, scale=sigma)
+    v = stats.t.pdf(x=t_ppf, df=nu, loc=mu, scale=sigma)
+    plt.plot(x, t_pdf)
+    plt.vlines(t_ppf, 0.0, v, lw=2, linestyles='dashed')
+    plt.show()
+
+    return round(stats.t.ppf(q=left_percent, df=nu, loc=mu, scale=sigma), 2)
 
 
 def calc_percent_point(df, percent=0.20):
@@ -30,7 +39,7 @@ def main():
     params_common = pd.read_csv('./data/common_data/common_params.csv')
 
     # 左側20％点を算出する
-    df = calc_percent_point(params_common, 0.20)
+    df = calc_percent_point(params_common, 0.15)
     save_csv('./data/common_data/common_params_percent.csv', df)
 
     # 個人快不快度
@@ -44,7 +53,7 @@ def main():
         params_personal = pd.read_csv(directory_path + 'personal_params.csv', encoding='utf-8-sig')
 
         # 左側20％を算出
-        df = calc_percent_point(params_personal, 0.20)
+        df = calc_percent_point(params_personal, 0.15)
         save_csv(directory_path + 'personal_params_percent.csv', df)
 
 
