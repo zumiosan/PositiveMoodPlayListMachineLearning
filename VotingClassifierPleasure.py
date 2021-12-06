@@ -44,14 +44,14 @@ def create_voting_classifier(file_path, dir_path, class_name):
 def main():
     class_list = ['hh', 'mh', 'mm', 'lm', 'll']
     for class_name in class_list:
-        # 共通印象データに対する前処理
+        # 共通快不快分類器の作成
         create_voting_classifier(
             file_path=f'./data/common_data/learning_data_common_pleasure_{class_name}.csv',
             dir_path='./data/common_data/',
             class_name=class_name
         )
 
-    # 個人印象データに対する前処理
+    # 個人快不快分類器の作成
     base_path = f".{os.sep}data{os.sep}questionnaire_personal_data/"
     directory_paths = get_directory_paths(base_path)
     for directory_path in directory_paths:
