@@ -48,7 +48,7 @@ def create_voting_classifier(file_path, dir_path):
         model_dir_path = f'{dir_path}/models'
         if not os.path.isdir(model_dir_path):
             os.makedirs(model_dir_path)
-        with open(f'{model_dir_path}/voring_model_impression_{class_name1}_{class_name2}.pickle', mode='wb') as fp:
+        with open(f'{model_dir_path}/voting_model_impression_{class_name1}_{class_name2}.pickle', mode='wb') as fp:
             pickle.dump(vote, fp)
 
 
