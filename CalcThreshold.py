@@ -38,12 +38,13 @@ def get_add_common_data(y_personal, y_common):
     :param y_common:
     :return: 共通快不快度データを結合したデータ
     """
-    # 中央値の差を求める．
+    # 平均値の差を求める．
     # diff_median = round(y_personal['pleasure'].median() - y_common['pleasure'].median(), 2)
-    diff_median = round(y_personal['pleasure'].mean() - y_common['pleasure'].mean(), 2)
+    diff_mean = round(y_personal['pleasure'].mean() - y_common['pleasure'].mean(), 2)
 
-    # 共通快不快度データを中央値の差分だけ動かす
-    y_common['pleasure'] = y_common['pleasure'] + diff_median
+    # 共通快不快度データを平均値の差分だけ動かす
+    # y_common['pleasure'] = y_common['pleasure'] + diff_median
+    y_common['pleasure'] = y_common['pleasure'] + diff_mean
 
     # 個人快不快度データに共通快不快度データを結合する．
     # 個人快不快度データになくて，共通快不快度データにあるものだけを足す．
@@ -88,52 +89,84 @@ def get_params_common(y_common):
     return params
 
 
-def calc_threshold_common(params):
+def calc_threshold(params):
     """
-    共通快不快度の閾値を算出する．
+    快不快度の閾値を算出する．
     :param params: 分布のパラメータ
     :return:　算出結果
     """
-    mu_sigma_list = []
+    mu_sum_sigma_list = []
+    mu_sub_sigma_list = []
     threshold_list = []
     for index, row in params.iterrows():
-        # mu-1sigmaを求める
-        mu_sigma = round(row['mu'] - row['sigma'], 2)
-        mu_sigma_list.append(mu_sigma)
-        # muが0.5以上ならmu-sigmaを閾値，それ以外はmuを閾値にする
+        # mu-sigmaを求める
+        mu_sub_sigma = round(row['mu'] - row['sigma'], 2)
+        mu_sub_sigma_list.append(mu_sub_sigma)
+        # mu+sigmaを求める
+        mu_sum_sigma = round(row['mu'] - row['sigma'], 2)
+        mu_sum_sigma_list.append(mu_sum_sigma)
+        # muが0.5以上ならmu-sigmaを閾値，mu+sigmaを閾値にする
         if row['mu'] >= 0.5:
-            threshold_list.append(mu_sigma)
+            threshold_list.append(mu_sub_sigma)
         else:
-            threshold_list.append(row['mu'])
-    params['mu-sigma'] = mu_sigma_list
+            threshold_list.append(mu_sum_sigma)
+    params['mu-sigma'] = mu_sub_sigma_list
+    params['mu+sigma'] = mu_sum_sigma_list
     params['threshold'] = threshold_list
     return params
 
 
-def calc_threshold_personal(params_personal, params_common):
-    """
-    個人快不快度の閾値を算出する．
-    :param params_personal: 個人快不快度の分布のパラメータ
-    :param params_common: 共通快不快度の分布のパラメータ
-    :return: 算出結果
-    """
-    mu_sigma_list = []
-    threshold_list = []
-    for index, row in params_personal.iterrows():
-        # mu-1sigmaを求める
-        mu_sigma = round(row['mu'] - row['sigma'], 2)
-        mu_sigma_list.append(mu_sigma)
-        # muが共通快不快度のmu-sigmaより小さければ0を閾値，muが0.5以上ならmu-sigmaを閾値，それ以外はmuを閾値にする
-        tmp = params_common[params_common['class'] == row['class']]
-        if row['mu'] < float(tmp['mu-sigma']):
-            threshold_list.append(0)
-        elif row['mu'] >= 0.5:
-            threshold_list.append(mu_sigma)
-        else:
-            threshold_list.append(row['mu'])
-    params_personal['mu-sigma'] = mu_sigma_list
-    params_personal['threshold'] = threshold_list
-    return params_personal
+# def calc_threshold_common(params):
+#     """
+#     共通快不快度の閾値を算出する．
+#     :param params: 分布のパラメータ
+#     :return:　算出結果
+#     """
+#     mu_sum_sigma_list = []
+#     mu_sub_sigma_list = []
+#     threshold_list = []
+#     for index, row in params.iterrows():
+#         # mu-sigmaを求める
+#         mu_sub_sigma = round(row['mu'] - row['sigma'], 2)
+#         mu_sub_sigma_list.append(mu_sub_sigma)
+#         # mu+sigmaを求める
+#         mu_sum_sigma = round(row['mu'] - row['sigma'], 2)
+#         mu_sum_sigma_list.append(mu_sum_sigma)
+#         # muが0.5以上ならmu-sigmaを閾値，mu+sigmaを閾値にする
+#         if row['mu'] >= 0.5:
+#             threshold_list.append(mu_sub_sigma)
+#         else:
+#             threshold_list.append(mu_sum_sigma)
+#     params['mu-sigma'] = mu_sub_sigma_list
+#     params['mu+sigma'] = mu_sum_sigma_list
+#     params['threshold'] = threshold_list
+#     return params
+#
+#
+# def calc_threshold_personal(params_personal, params_common):
+#     """
+#     個人快不快度の閾値を算出する．
+#     :param params_personal: 個人快不快度の分布のパラメータ
+#     :param params_common: 共通快不快度の分布のパラメータ
+#     :return: 算出結果
+#     """
+#     mu_sigma_list = []
+#     threshold_list = []
+#     for index, row in params_personal.iterrows():
+#         # mu-1sigmaを求める
+#         mu_sigma = round(row['mu'] - row['sigma'], 2)
+#         mu_sigma_list.append(mu_sigma)
+#         # muが共通快不快度のmu-sigmaより小さければ0を閾値，muが0.5以上ならmu-sigmaを閾値，それ以外はmuを閾値にする
+#         tmp = params_common[params_common['class'] == row['class']]
+#         if row['mu'] < float(tmp['mu-sigma']):
+#             threshold_list.append(0)
+#         elif row['mu'] >= 0.5:
+#             threshold_list.append(mu_sigma)
+#         else:
+#             threshold_list.append(row['mu'])
+#     params_personal['mu-sigma'] = mu_sigma_list
+#     params_personal['threshold'] = threshold_list
+#     return params_personal
 
 
 def get_class_data(data):
@@ -161,7 +194,7 @@ def main():
         params['class'] = index + 1
         params_common = pd.concat([params_common, params])
     # 閾値を算出する
-    params_common = calc_threshold_common(params_common)
+    params_common = calc_threshold(params_common)
     # csvに保存
     save_csv('./data/common_data/common_params.csv', params_common)
 
@@ -188,7 +221,7 @@ def main():
             params_personal = pd.concat([params_personal, params])
 
         # 閾値を算出する
-        params_personal = calc_threshold_personal(params_personal, params_common)
+        params_personal = calc_threshold(params_personal)
         save_csv(directory_path + 'personal_params.csv', params_personal)
 
 

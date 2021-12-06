@@ -4,7 +4,7 @@
 import os
 import sys
 import pandas as pd
-from packages.files import save_csv, get_directory_paths, get_file_paths
+from packages.files import save_csv, get_directory_paths
 from packages.CalcPleasureClass import calc_pleasure_class
 
 
@@ -19,8 +19,13 @@ def main():
         personal_data = pd.read_csv(directory_path + 'personal_all.csv')
         personal_params = pd.read_csv(directory_path + 'personal_params.csv')
         features_data = pd.read_csv('./data/features_data/questionnaire_features_data.csv')
-        learning_data_common = pd.read_csv('./data/common_data/learning_data_common.csv')
         del personal_data['sid']
+
+        # 共通データを読み込み
+        common_data = pd.read_csv('./data/common_data/learning_data_common.csv')
+
+        # 個人データに個人の回答が得られていない楽曲に対する印象と快不快度を共通データから取得する
+        
 
         # 閾値以上か未満かでクラス分け
         personal_data = calc_pleasure_class(personal_data, personal_params)
