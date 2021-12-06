@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import sklearn.preprocessing as pre
 from sklearn.feature_selection import SelectPercentile
-from packages.files import save_csv, get_directory_paths
+from packages.files import get_directory_paths
 
 
 def get_class_number(class_name):
@@ -24,7 +24,7 @@ def get_class_number(class_name):
         class_num = 2
     elif class_name == 'mm':
         class_num = 3
-    elif class_name == 'lm':
+    elif class_name == 'ml':
         class_num = 4
     elif class_name == 'll':
         class_num = 5
@@ -34,7 +34,7 @@ def get_class_number(class_name):
     return class_num
 
 
-class DataPreprocessingPleasure:
+class DataProcessingImpression:
     """
     データの前処理を行うクラス
     """
@@ -56,6 +56,7 @@ class DataPreprocessingPleasure:
         # midとsidの削除
         try:
             del self.df['mid']
+            del self.df['pleasure']
             del self.df['sid']
         except KeyError:
             pass
@@ -68,14 +69,12 @@ class DataPreprocessingPleasure:
         self.df.columns = self.columns
 
         # 説明変数と目的変数
-        self.x = self.df.loc[:, list(set(self.columns) - {'pleasure', 'class'})]
+        self.x = self.df.loc[:, list(set(self.columns) - {'class'})]
         self.x_columns = self.x.columns
         self.y_impression = self.df.loc[:, 'class']
-        self.y_pleasure = self.df.loc[:, 'pleasure']
 
         # 特徴選択後の説明へんす
         self.x_selected = None
-        self.x_selected_columns = None
         self.y_selected = None
 
         # 前処理のスケーラー
@@ -94,10 +93,9 @@ class DataPreprocessingPleasure:
         for i, name in enumerate(class_names):
             class_names[i] = get_class_number(name)
 
-        # 選択したクラスのデータだけ取り出す
+        # 選択した印象のデータだけ取り出す
         self.x_selected = pd.DataFrame([self.x.loc[index, :] for index, class_num in enumerate(self.y_impression) if int(class_num) in class_names])
-        self.y_selected = pd.Series([self.y_pleasure[index] for index, class_num in enumerate(self.y_impression) if int(class_num) in class_names], name='pleasure')
-        # print(self.x_selected, self.y_selected)
+        self.y_selected = pd.Series([self.y_impression[index] for index, class_num in enumerate(self.y_impression) if int(class_num) in class_names], name='impression')
 
     def standardization(self):
         """
@@ -119,14 +117,12 @@ class DataPreprocessingPleasure:
         for name in self.x:
             self.x[name] = pd.cut(self.x[name], num, labels=False)
 
-    def features_select(self, class_names):
+    def features_select(self):
         """
         特徴量選択を行う
         """
-        self.get_target_impression_class(class_names)
         selector = SelectPercentile(percentile=40)
-        # print(self.x_selected, self.y_selected)
-        selector.fit(self.x_selected, self.y_selected)
+        selector.fit(self.x, self.y_impression)
         mask = selector.get_support()
         # print(data.columns)
         # print(mask)
@@ -138,17 +134,13 @@ class DataPreprocessingPleasure:
                 columns.append(self.x_columns[i])
 
         # 特徴選択後のデータ
-        self.x_selected = pd.DataFrame(selector.transform(self.x), columns=columns)
+        self.x = pd.DataFrame(selector.transform(self.x), columns=columns)
 
 
-def preprocessing_pleasure_data(file_path, dir_path, file_name):
-    data = DataPreprocessingPleasure(file_path)
+def preprocessing_impression_data(file_path, dir_path, file_name):
+    data = DataProcessingImpression(file_path)
     # print(data.df)
-
-    # # 選択したクラスのデータだけ取り出す
-    # class_name1, class_name2 = 'ml', 'll'
-    # x, y = data.get_target_impression_class(class_name1, class_name2)
-    # print(x, y)
+    # print(data.x_columns)
 
     # 標準化
     data.standardization()
@@ -158,33 +150,32 @@ def preprocessing_pleasure_data(file_path, dir_path, file_name):
     data.discretization(num=20)
     # print(data.x)
 
-    for class_name in ['hh', 'mh', 'mm', 'lm', 'll']:
-        # 特徴選択
-        data.features_select(class_name)
+    # 特徴選択
+    data.features_select()
 
-        # データを保存
-        df = pd.concat([data.x_selected, data.y_selected], axis=1)
-        df.to_csv(f'{dir_path + file_name}_{class_name}.csv', index=False, encoding='utf-8-sig')
+    # データを保存
+    df = pd.concat([data.x, data.y_impression], axis=1)
+    df.to_csv(f'{dir_path + file_name}.csv', index=False, encoding='utf-8-sig')
 
 
 def main():
-    # 共通快不快度データに対する前処理
-    preprocessing_pleasure_data(
+    # 共通印象データに対する前処理
+    preprocessing_impression_data(
         file_path='./data/common_data/learning_data_common.csv',
         dir_path='./data/common_data/',
-        file_name='learning_data_common_pleasure',
+        file_name='learning_data_common_impression',
     )
 
-    # 個人快不快度データに対する前処理
+    # 個人印象データに対する前処理
     base_path = f".{os.sep}data{os.sep}questionnaire_personal_data/"
     directory_paths = get_directory_paths(base_path)
     for directory_path in directory_paths:
         # 個人データ読み込み
         directory_path = f'{directory_path}/personal_data/'
-        preprocessing_pleasure_data(
+        preprocessing_impression_data(
             file_path=directory_path + 'learning_data_personal.csv',
             dir_path=directory_path,
-            file_name='learning_data_personal_pleasure',
+            file_name='learning_data_personal_impression',
         )
 
 
