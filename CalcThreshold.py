@@ -50,8 +50,8 @@ def get_add_common_data(y_personal, y_common):
     # 個人快不快度データになくて，共通快不快度データにあるものだけを足す．
     is_not_exist_mid = []
     for index, row in y_common.iterrows():
-        if not row['mid'] in y_personal['mid']:
-            is_not_exist_mid.append(row['mid'])
+        if not int(row['mid']) in y_personal['mid'].values:
+            is_not_exist_mid.append(int(row['mid']))
     y_personal = pd.concat([y_personal, y_common[y_common['mid'].isin(is_not_exist_mid)]])
 
     return y_personal
