@@ -71,7 +71,11 @@ class DataProcessingImpression:
         # 説明変数と目的変数
         self.x = self.df.loc[:, list(set(self.columns) - {'class'})]
         self.x_columns = self.x.columns
-        self.y_impression = self.df.loc[:, 'class']
+        self.y_impression = None
+        try:
+            self.y_impression = self.df.loc[:, 'class']
+        except KeyError:
+            pass
 
         # 特徴選択後の説明へんす
         self.x_selected = None

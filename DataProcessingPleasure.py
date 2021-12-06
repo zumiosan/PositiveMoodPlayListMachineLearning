@@ -71,11 +71,12 @@ class DataProcessingPleasure:
         self.x = self.df.loc[:, list(set(self.columns) - {'pleasure', 'class'})]
         self.x_columns = self.x.columns
         self.y_impression = None
+        self.y_pleasure = None
         try:
+            self.y_pleasure = self.df.loc[:, 'pleasure']
             self.y_impression = self.df.loc[:, 'class']
         except KeyError:
             pass
-        self.y_pleasure = self.df.loc[:, 'pleasure']
 
         # 特徴選択後の説明へんす
         self.x_selected = None
