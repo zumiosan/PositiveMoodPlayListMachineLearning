@@ -190,7 +190,6 @@ def predict_impression_class(all_data_path, dir_path):
     models.create_proba_data(all_data.mid)
 
 
-
 def main():
 
     # 全楽曲の特徴量データのパス
