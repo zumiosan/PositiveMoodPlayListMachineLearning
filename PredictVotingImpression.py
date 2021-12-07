@@ -40,9 +40,6 @@ class VotingClassifier:
         # 予測結果を格納したlist
         self.pred_results = []
 
-        # 予測結果の確率を格納したlist
-        # self.proba_results = []
-
         # 各クラスの確率の合計
         self.proba_hh = 0
         self.proba_mh = 0
@@ -52,6 +49,9 @@ class VotingClassifier:
 
         # プレイリスト作成用に全ての予測結果の確率を格納したlist
         self.all_proba_results = []
+
+        # midと印象確率が格納されたデータ
+        self.result_data = None
 
     def predict(self, x_test):
         """
@@ -127,12 +127,17 @@ class VotingClassifier:
         self.pred_results.append(result_class)
 
     def create_proba_data(self, mid):
-        columns = ['mid', 'High', 'MHigh', 'Middle', 'MLow', 'Low']
+        columns = ['mid', 'hh', 'mh', 'mm', 'lm', 'll', 'class']
         self.all_proba_results = pd.DataFrame(self.all_proba_results)
-        data = pd.concat([mid, self.all_proba_results], axis=1)
+        self.pred_results = pd.DataFrame(self.pred_results)
+        # print(self.proba_results)
+        data = pd.concat([mid, self.all_proba_results, self.pred_results], axis=1)
         data.columns = columns
-        # print(data)
-        data.to_csv(f'{self.dir_path}all_data_spotify_proba.csv', index=False)
+        self.result_data = data
+
+        self.result_data.to_csv(f'{self.dir_path}all_proba_data_spotify.csv', encoding='utf-8', index=False)
+
+    # def add_class_num(self):
 
 
 def get_models(dir_path):
@@ -161,27 +166,18 @@ def get_columns_order(models):
     return columns_orders
 
 
-def predict_impression_class(all_data_path, learning_data_path, dir_path):
+def predict_impression_class(all_data_path, dir_path):
     # テストデータの読み込み
     all_data = DataProcessingImpression(all_data_path)
     all_data.standardization()
     all_data.discretization(num=20)
-
-    # # モデルの学習に使ったデータの読み込み
-    # learning_data = DataProcessingImpression(learning_data_path)
-    # # print(learning_data.columns.values)
-    #
-    # # 使用する特徴量を学習データに揃える
-    # all_data.x = all_data.x[learning_data.columns.values[:-1]]
-    # print(all_data.x.columns)
-
 
     # インスタンス生成
     models = VotingClassifier(dir_path)
 
     # 予測
     columns = all_data.x.columns
-    print(columns)
+    # print(columns)
     for index, line in all_data.x.iterrows():
         print(index)
         array = line.to_numpy()
@@ -190,8 +186,9 @@ def predict_impression_class(all_data_path, learning_data_path, dir_path):
         x_test = pd.DataFrame(array, columns=columns)
         models.predict(x_test)
 
-    # 予測結果の確率をcsvに変換
+    # 予測結果の確率とmidを結合
     models.create_proba_data(all_data.mid)
+
 
 
 def main():
@@ -202,20 +199,19 @@ def main():
     # 共通印象の推定
     predict_impression_class(
         all_data_path=all_data_path,
-        learning_data_path='./data/common_data/learning_data_common_impression.csv',
         dir_path='./data/common_data/',
     )
 
-    # # 個人印象の推定
-    # base_path = f".{os.sep}data{os.sep}questionnaire_personal_data/"
-    # directory_paths = get_directory_paths(base_path)
-    # for directory_path in directory_paths:
-    #     # 個人データ読み込み
-    #     directory_path = f'{directory_path}/personal_data/'
-    #     predict_impression_class(
-    #         file_path=directory_path + 'learning_data_personal_impression.csv',
-    #         dir_path=directory_path,
-    #     )
+    # 個人印象の推定
+    base_path = f".{os.sep}data{os.sep}questionnaire_personal_data/"
+    directory_paths = get_directory_paths(base_path)
+    for directory_path in directory_paths:
+        # 個人データ読み込み
+        directory_path = f'{directory_path}/personal_data/'
+        predict_impression_class(
+            all_data_path=all_data_path,
+            dir_path=directory_path,
+        )
 
 
 if __name__ == '__main__':
