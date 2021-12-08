@@ -19,7 +19,7 @@ class_list = [['hh', 'mh'], ['hh', 'mm'], ['hh', 'ml'], ['hh', 'll'],
               ['ml', 'll'], ]
 
 
-class VotingClassifier:
+class VotingClassifierImpression:
     """
     投票形式でクラスを予測するクラスです．
     """
@@ -127,6 +127,11 @@ class VotingClassifier:
         self.pred_results.append(result_class)
 
     def create_proba_data(self, mid):
+        """
+        midと各印象の印象確率，主要な印象を結合したデータを作成して保存する
+        :param mid:
+        :return:
+        """
         columns = ['mid', 'hh', 'mh', 'mm', 'lm', 'll', 'class']
         self.all_proba_results = pd.DataFrame(self.all_proba_results)
         self.pred_results = pd.DataFrame(self.pred_results)
@@ -159,6 +164,11 @@ def get_models(dir_path):
 
 
 def get_columns_order(models):
+    """
+    モデルの学習の際に使用した列名を取得する．
+    :param models:
+    :return:
+    """
     columns_orders = []
     for model in models:
         columns_order = model.feature_names_in_
@@ -173,7 +183,7 @@ def predict_impression_class(all_data_path, dir_path):
     all_data.discretization(num=20)
 
     # インスタンス生成
-    models = VotingClassifier(dir_path)
+    models = VotingClassifierImpression(dir_path)
 
     # 予測
     columns = all_data.x.columns
