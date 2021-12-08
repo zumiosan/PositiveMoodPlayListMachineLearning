@@ -74,6 +74,10 @@ class DataProcessingPleasure:
         self.y_pleasure = None
         try:
             self.y_pleasure = self.df.loc[:, 'pleasure']
+        except KeyError:
+            pass
+
+        try:
             self.y_impression = self.df.loc[:, 'class']
         except KeyError:
             pass
