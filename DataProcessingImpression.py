@@ -24,7 +24,7 @@ def get_class_number(class_name):
         class_num = 2
     elif class_name == 'mm':
         class_num = 3
-    elif class_name == 'ml':
+    elif class_name == 'lm':
         class_num = 4
     elif class_name == 'll':
         class_num = 5
