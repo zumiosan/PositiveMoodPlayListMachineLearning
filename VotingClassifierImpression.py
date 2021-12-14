@@ -18,10 +18,10 @@ def create_voting_classifier(file_path, dir_path):
     """
     2クラスで印象分類を行うVotingClassifierを10種類生成する
     """
-    class_list = [['hh', 'mh'], ['hh', 'mm'], ['hh', 'ml'], ['hh', 'll'],
-                  ['mh', 'mm'], ['mh', 'ml'], ['mh', 'll'],
-                  ['mm', 'ml'], ['mm', 'll'],
-                  ['ml', 'll'], ]
+    class_list = [['hh', 'mh'], ['hh', 'mm'], ['hh', 'lm'], ['hh', 'll'],
+                  ['mh', 'mm'], ['mh', 'lm'], ['mh', 'll'],
+                  ['mm', 'lm'], ['mm', 'll'],
+                  ['lm', 'll'], ]
 
     for class_name in class_list:
         # class_name = ['hh', 'mm']
