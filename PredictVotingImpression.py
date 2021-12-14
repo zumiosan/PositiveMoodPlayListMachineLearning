@@ -13,10 +13,10 @@ from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
 
-class_list = [['hh', 'mh'], ['hh', 'mm'], ['hh', 'ml'], ['hh', 'll'],
-              ['mh', 'mm'], ['mh', 'ml'], ['mh', 'll'],
-              ['mm', 'ml'], ['mm', 'll'],
-              ['ml', 'll'], ]
+class_list = [['hh', 'mh'], ['hh', 'mm'], ['hh', 'lm'], ['hh', 'll'],
+              ['mh', 'mm'], ['mh', 'lm'], ['mh', 'll'],
+              ['mm', 'lm'], ['mm', 'll'],
+              ['lm', 'll'], ]
 
 
 class VotingClassifierImpression:
