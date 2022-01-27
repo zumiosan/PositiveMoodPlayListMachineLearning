@@ -73,6 +73,16 @@ def get_impression_pleasure_data(class_name, class_num, impression_username, ple
     return data
 
 
+def get_impression_data_no_class_num(class_name, impression_username, pleasure_username):
+    query = f"WITH table1 AS (SELECT * FROM impression_info WHERE username='{impression_username}')," \
+            f"table2 AS (SELECT * FROM pleasure_info WHERE username='{pleasure_username}')," \
+            f"table3 AS (SELECT * FROM table1 INNER JOIN table2 ON table1.mid = table2.mid) " \
+            "SELECT count(*) FROM table3 " \
+            f"WHERE {class_name} >= {impression_level}"
+    data = execute_query(query)
+    return data
+
+
 def main():
     impression_result_data = []
     common_pleasure_result_data = []
@@ -84,8 +94,8 @@ def main():
         for class_name in impressions:
             # print(f'pmp_user{i}', class_name)
             data_impression = get_impression_data(class_name, class_name_to_num[class_name], f'pmp_user{i}', f'pmp_user{i}')
-            data_personal = get_impression_pleasure_data(class_name, class_name_to_num[class_name], f'pmp_user{i}', 'common')
-            data_common = get_impression_pleasure_data(class_name, class_name_to_num[class_name], f'pmp_user{i}', f'pmp_user{i}')
+            data_common = get_impression_pleasure_data(class_name, class_name_to_num[class_name], f'pmp_user{i}', 'common')
+            data_personal = get_impression_pleasure_data(class_name, class_name_to_num[class_name], f'pmp_user{i}', f'pmp_user{i}')
             # print(data_impression[0]['count'], data_personal[0]['count'], data_common[0]['count'])
             tmp_impression_result_data.append(data_impression[0]['count'])
             tmp_common_pleasure_result_data.append(data_common[0]['count'])
