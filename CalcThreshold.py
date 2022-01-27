@@ -103,7 +103,7 @@ def calc_threshold(params):
         mu_sub_sigma = round(row['mu'] - row['sigma'], 2)
         mu_sub_sigma_list.append(mu_sub_sigma)
         # mu+sigmaを求める
-        mu_sum_sigma = round(row['mu'] - row['sigma'], 2)
+        mu_sum_sigma = round(row['mu'] + row['sigma'], 2)
         mu_sum_sigma_list.append(mu_sum_sigma)
         # muが0.5以上ならmu-sigmaを閾値，mu+sigmaを閾値にする
         if row['mu'] >= 0.5:
