@@ -23,11 +23,19 @@ def concat_questionnaire_data(file_paths):
         if index == 0:
             data = pd.read_csv(file_path, encoding="utf-8-sig")
             data_class = data[['mid', 'class']]
-            data_pleasure = data[['mid', 'pleasure']]
+            try:
+                data_pleasure = data[['mid', 'pleasure']]
+            except KeyError:
+                data_pleasure = data[['mid']]
+                data_pleasure['pleasure'] = None
+                # print(data_pleasure)
         else:
             tmp = pd.read_csv(file_path, encoding="utf-8-sig")
             data_class = data_class.join(tmp[['class']], rsuffix=f'_{index + 1}')
-            data_pleasure = data_pleasure.join(tmp[['pleasure']], rsuffix=f'_{index + 1}')
+            try:
+                data_pleasure = data_pleasure.join(tmp[['pleasure']], rsuffix=f'_{index + 1}')
+            except KeyError:
+                tmp['pleasure'] = None
 
     return data_class, data_pleasure
 
@@ -59,6 +67,7 @@ def calc_common_impression(data_class):
     :return: 共通印象データ
     """
 
+    # data_class.dropna(how='all', axis=1, inplace=True)
     common_data = data_class[['mid']]
     tmp_class = data_class.loc[:, "class":]
     common_class = []
@@ -106,7 +115,7 @@ def main():
     common_data = pd.DataFrame()
     for directory_path in directory_paths:
         file_paths = get_file_paths(directory_path)
-        # print(file_names)
+        # print(file_paths)
 
         # ファイルを読み込んで結合する
         data_class, data_pleasure = concat_questionnaire_data(file_paths)
