@@ -142,5 +142,10 @@ cython_debug/
 # csvデータ
 *.csv
 
+# 画像データ
+*.png
+
+*.pickle
+
 # pycharm file
 .idea
