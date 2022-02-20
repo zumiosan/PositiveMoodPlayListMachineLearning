@@ -124,13 +124,13 @@ def predict_pleasure(all_data_impression_path, dir_path):
 
 def main():
 
-    # 共通印象の推定
-    # predict_pleasure(
-    #     all_data_impression_path='./data/common_data/all_data_spotify_add_classes.csv',
-    #     dir_path='./data/common_data/',
-    # )
+    # 共通快の推定
+    predict_pleasure(
+        all_data_impression_path='./data/common_data/all_data_spotify_add_classes.csv',
+        dir_path='./data/common_data/',
+    )
 
-    # 個人印象の推定
+    # 個人快の推定
     base_path = f".{os.sep}data{os.sep}questionnaire_personal_data/"
     directory_paths = get_directory_paths(base_path)
     for directory_path in directory_paths:
